@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>List Post</title>
+  <link rel="stylesheet" href="styles.css">
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+</head>
+<body>
+
+
+  <div ng-app="postApp" ng-controller="">
+  <h4><small>RECENT POSTS</small></h4>
+      <hr>
+     
+      <div ng-repeat="post in posts">
+      <h2>I Love Food</h2>
+      <h5><span class="glyphicon glyphicon-time"></span> Post at Sep 27, 2015.</h5>
+      <br>
+      <p> {{post.PostData}} </p>
+      <br><br>
+      <div id="<%= posts[i]._id %>">
+      <h2>{{post.upVotes}} UpVotes</h2>
+
+      <button class="button-upvote" onclick="upVote('{{ post._id }}','{{post.upVotes}}','{{post.PostData }}')">Upvote</button>
+  
+      </div>
+
+    </div>
+      
+  <script src="main.js"></script>
+  <script>
+    var app = angular.module('myApp', []);
+app.controller('myCtrl', function($scope) {
+    $http.get("\getData")
+  .then(function(response) {
+    console.log(response.data);
+      $scope.posts = response.data;
+  });
+});
+  </script>
+
+</body>
+</html>
