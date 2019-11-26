@@ -4,7 +4,12 @@ const bodyParser = require('body-parser')
 const MongoClient = require('mongodb').MongoClient
 const Mongo=require('mongodb')
 const path = require('path');
+const bcrypt = require('bcrypt');
+let jwt = require('jsonwebtoken');
+let config = require('./config');
 
+//let config = require('./config');
+//let middleware = require('./middleware');
 
 
 
@@ -31,9 +36,31 @@ app.get('/', (req, res) => {
   // })
   res.render('index.ejs',{name:"hemant"})
 }) 
+app.post('/login',(req,res)=>
+{
+let username=req.body.form_username;
+let password=req.body.form_password;
+console.log(username);
+  db.collection('login-post').find({form_username:username},{}).toArray((err,result)=>{console.log(result)
+bcrypt.compare(password,result[0].form_password, function(err, result) {
+	if(result)
+	{	console.log("succeess");
+	let token = jwt.sign({username:username},config.secret,{expiresIn:'24H'});
+	res.cookie("token",token);
+	 res.render('index.ejs');
+		}
+	else
+	res.redirect('/');
+  
+});
+
+})
+})
 
 
-app.get('/list-post', (req, res) => {
+
+
+app.get('/list-post',verifyToken ,(req, res) => {
 	// db.collection('post').find().toArray((err, result) => {
  //     if (err) return console.log(err)
  //     console.log(result);
@@ -42,7 +69,26 @@ app.get('/list-post', (req, res) => {
  res.sendFile(path.join(__dirname+'/views/list-post.html'))
  
 })
-app.get('/getData', (req, res) => {
+
+app.post('/post-form',(req,res)=>{
+
+	console.log("Called post form ");
+	let user=req.body;
+	bcrypt.hash(user.form_password,10,(err,hash)=>{
+		user.form_password=hash;
+		console.log(req.body)
+		db.collection('login-post').save(user,(err,result)=>
+		{
+			 if (err) return console.log(err)
+    console.log('saved to database')
+    res.redirect('/')
+		})
+	})
+		
+	
+	
+})
+app.get('/getData',verifyToken, (req, res) => {
 	db.collection('post').find().toArray((err, result) => {
      if (err) return console.log(err)
      console.log(result);
@@ -51,7 +97,7 @@ app.get('/getData', (req, res) => {
  
 })
 
-app.get('/create-post', (req, res) => {
+app.get('/create-post', verifyToken,(req, res) => {
   res.render('create-post.ejs')
 })
 
@@ -59,7 +105,7 @@ app.get('/create-post', (req, res) => {
  //     console.log('listening on 3000')
  //   })
 
-app.post('/addPost', (req, res) => {
+app.post('/addPost', verifyToken,(req, res) => {
 	console.log("called add post")
 	let post=req.body; 
 	post.timestamp=new Date();
@@ -73,7 +119,7 @@ app.post('/addPost', (req, res) => {
 }) 
 
 
-app.post('/upvote',(req,res)=> {
+app.post('/upvote',verifyToken,(req,res)=> {
 console.log("called upvote");
 let post=req.body;
 // console.log(req);
@@ -119,7 +165,43 @@ db.collection('post')
 
 
 
+function verifyToken(req, res, next) {
+  // Get auth header value
+  const bearerHeader = req.headers['cookie'];
+  // Check if bearer is undefined
+  if(typeof bearerHeader !== 'undefined') {
+    // Split at the space
+    const bearer = bearerHeader.split('=');
+    // Get token from array
+    const token = bearer[1];
+    // Set the token
+  //  req.token = bearerToken;
+    // Next middleware
+    console.log(token+"---------token");
+    if (token) {
+    jwt.verify(token, config.secret, (err, decoded) => {
+      if (err) {
+        return res.json({
+          success: false,
+          message: 'Token is not valid'
+        });
+      } else {
+        req.decoded = decoded;
+        next();
+      }
+    });
+  } else {
+    return res.json({
+      success: false,
+      message: 'Auth token is not supplied'
+    });
+  }
+  } else {
+    // Forbidden
+    res.sendStatus(403);
+  }
 
+}
 
 // app.put('/quotes', (req, res) => {
 //   db.collection('quotes')

@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <title>MY APP</title>
   <link rel="stylesheet" href="styles.css">
+  <script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+
 </head>
 <body>
   <h1>POST APP</h1>
@@ -11,6 +16,31 @@
 
  <a href="/create-post" ><button id="Create Post"> Create Post </button></a>
  <a href="/list-post" ><button id="List Post"> List Post </button></a>
+<button id="login" > List Post </button>
+
+
+<div id="login-popup">
+  <form id="post-signup" action="/post-form" method="POST">
+    <input type="textfield" name="form_username" />
+     <input type="textfield" name="form_emailid" />
+     <input type="password" name="form_password" />
+    <input type="submit">Sign Up</button>
+
+  </form>
+
+  <h2>OR</h2>
+
+  Login using google 
+
+  <form id="post-login" action="/login" method="POST">
+     <input type="textfield" name="form_username" />
+     <input type="password" name="form_password" />
+    <input type="submit">Login</button>
+
+  </form>
+
+
+</div>
 
   <!-- <h2>Add a quote</h2>
 
@@ -31,6 +61,27 @@
   </div> -->
 
   <script src="main.js"></script>
+  <script>
+     if(typeof token!="undefined")
+      {
+        console.log("entered");
+      }
+
+    // document.getElementById("post-signup").onsubmit=function(e)
+    // {
+    //     e.preventDefault();
+    //       $.ajax({
+    //         type: 'post',
+    //         url: '/post-form',
+    //         data: $('post-signup').serialize(),
+    //         success: function () {
+    //           alert('form was submitted');
+    //         }
+    //       });
+
+    // }
+
+  </script>
 
 </body>
 </html>

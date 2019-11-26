@@ -10,9 +10,10 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
 </head>
 <body>
-
+<div class=""><button href="" onclick="logout()" class="logout-button"></button></div>
 
   <div ng-app="postApp" ng-controller="">
+     
   <h4><small>RECENT POSTS</small></h4>
       <hr>
      
@@ -33,6 +34,14 @@
       
   <script src="main.js"></script>
   <script>
+    function logout()
+    {
+      localStorage.clear();
+      window.reload("/" );
+    }
+
+
+
     var app = angular.module('myApp', []);
 app.controller('myCtrl', function($scope) {
     $http.get("\getData")
